@@ -5,14 +5,15 @@ sources = $(wildcard */*/*.c)
 outs = $(sources:%.c=%.out)
 debugs = $(sources:%.c=%.debug)
 
-.PHONY: outs debugs clean
+.PHONY: o g clean
 
-outs: $(outs)
+o: $(outs)
 
-debugs: $(debugs)
+g: $(debugs)
 
 clean: 
-	rm -f $(outs) $(debugs)
+	rm -f $(outs)
+	rm -f $(debugs)
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $^
