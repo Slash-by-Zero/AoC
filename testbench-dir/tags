@@ -1,0 +1,60 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/by0/c/AoC/testbench-dir/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+addToList	cmdline.c	/^static int addToList(char *key, char* value){$/;"	f	typeref:typename:int	file:
+all	testbench.c	/^	int hline, all;$/;"	m	struct:tabularStyle	typeref:typename:int	file:
+cmdlineInit	cmdline.c	/^int cmdlineInit(int argc, char *argv[]){$/;"	f	typeref:typename:int
+complete	testbench.c	/^	int complete, exitcode;$/;"	m	struct:programResults	typeref:typename:int	file:
+convTime	testbench.c	/^static char *convTime(long time, int length){$/;"	f	typeref:typename:char *	file:
+count	testbench.c	/^	long count, total, max, min;$/;"	m	struct:programResults	typeref:typename:long	file:
+cwd	testbench.c	/^static char *cwd;$/;"	v	typeref:typename:char *	file:
+die	testbench.c	/^static void die(char *msg){$/;"	f	typeref:typename:void	file:
+exitcode	testbench.c	/^	int complete, exitcode;$/;"	m	struct:programResults	typeref:typename:int	file:
+getProgramName	cmdline.c	/^char *const getProgramName(){return programName;}$/;"	f	typeref:typename:char * const
+getRemainingArguments	cmdline.c	/^char **getRemainingArguments(int *count){$/;"	f	typeref:typename:char **
+getValueByKey	cmdline.c	/^char *const getValueByKey(const char *key){$/;"	f	typeref:typename:char * const
+hdash1	testbench.c	/^	char *hdash1, *hdash2, *vdash, *hvdash1, *hvdash2;$/;"	m	struct:tabularStyle	typeref:typename:char *	file:
+hdash2	testbench.c	/^	char *hdash1, *hdash2, *vdash, *hvdash1, *hvdash2;$/;"	m	struct:tabularStyle	typeref:typename:char *	file:
+hline	testbench.c	/^	int hline, all;$/;"	m	struct:tabularStyle	typeref:typename:int	file:
+hvdash1	testbench.c	/^	char *hdash1, *hdash2, *vdash, *hvdash1, *hvdash2;$/;"	m	struct:tabularStyle	typeref:typename:char *	file:
+hvdash2	testbench.c	/^	char *hdash1, *hdash2, *vdash, *hvdash1, *hvdash2;$/;"	m	struct:tabularStyle	typeref:typename:char *	file:
+key	cmdline.c	/^	char *key, *value;$/;"	m	struct:option	typeref:typename:char *	file:
+main	testbench.c	/^int main(int argc, char *argv[]){$/;"	f	typeref:typename:int
+max	testbench.c	/^	long count, total, max, min;$/;"	m	struct:programResults	typeref:typename:long	file:
+min	testbench.c	/^	long count, total, max, min;$/;"	m	struct:programResults	typeref:typename:long	file:
+next	cmdline.c	/^	struct option *next;$/;"	m	struct:option	typeref:struct:option *	file:
+next	testbench.c	/^	struct pathResults *next;$/;"	m	struct:pathResults	typeref:struct:pathResults *	file:
+next	testbench.c	/^	struct programResults* next;$/;"	m	struct:programResults	typeref:struct:programResults *	file:
+option	cmdline.c	/^struct option{$/;"	s	file:
+options	cmdline.c	/^} *options;$/;"	v	typeref:struct:option *
+path	testbench.c	/^	char *path;$/;"	m	struct:pathResults	typeref:typename:char *	file:
+pathResults	testbench.c	/^struct pathResults{$/;"	s	file:
+printFile	testbench.c	/^static void printFile(FILE *toPrint, FILE *stream){$/;"	f	typeref:typename:void	file:
+printOutput	testbench.c	/^static int printOutput=1;$/;"	v	typeref:typename:int	file:
+printResults	testbench.c	/^void printResults(struct pathResults *results, struct tabularStyle *style){$/;"	f	typeref:typename:void
+programName	cmdline.c	/^static char *programName = NULL;$/;"	v	typeref:typename:char *	file:
+programResults	testbench.c	/^struct programResults{$/;"	s	file:
+rest	cmdline.c	/^static char **rest = NULL;$/;"	v	typeref:typename:char **	file:
+restc	cmdline.c	/^static int restc=0;$/;"	v	typeref:typename:int	file:
+results	testbench.c	/^	struct programResults *results;$/;"	m	struct:pathResults	typeref:struct:programResults *	file:
+runs	testbench.c	/^static long runs=1024, time_limit=0;$/;"	v	typeref:typename:long	file:
+shell	testbench.c	/^static FILE *shell;$/;"	v	typeref:typename:FILE *	file:
+style_csv	testbench.c	/^	style_csv ={$/;"	v	typeref:struct:tabularStyle	file:
+style_utf16	testbench.c	/^static struct tabularStyle style_utf16 = {$/;"	v	typeref:struct:tabularStyle	file:
+style_utf8	testbench.c	/^	style_utf8 = {$/;"	v	typeref:struct:tabularStyle	file:
+tabularStyle	testbench.c	/^struct tabularStyle{$/;"	s	file:
+testPaths	testbench.c	/^static void testPaths(struct pathResults *res){$/;"	f	typeref:typename:void	file:
+testProgram	testbench.c	/^static void testProgram(struct programResults *res, char *path){$/;"	f	typeref:typename:void	file:
+time_limit	testbench.c	/^static long runs=1024, time_limit=0;$/;"	v	typeref:typename:long	file:
+total	testbench.c	/^	long count, total, max, min;$/;"	m	struct:programResults	typeref:typename:long	file:
+user	testbench.c	/^	char *user;$/;"	m	struct:programResults	typeref:typename:char *	file:
+value	cmdline.c	/^	char *key, *value;$/;"	m	struct:option	typeref:typename:char *	file:
+vdash	testbench.c	/^	char *hdash1, *hdash2, *vdash, *hvdash1, *hvdash2;$/;"	m	struct:tabularStyle	typeref:typename:char *	file:

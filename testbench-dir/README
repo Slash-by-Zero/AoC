@@ -1,0 +1,33 @@
+Usage: ./testbench [options]
+
+options := option [options]
+option  := "--" key "=" value
+
+Special restrictions:
+	- Either day or path option must have a value!
+
+Extra information:
+	As an alternative you can also write the options in a testbench.conf file in the same folder as the testbench binary. 
+	In wich case you can ignore the "--" and seperate options ith '\n'.
+	
+	This program was made for timing the solutions of AoC solution wich are present as executable programs,
+	but is made to support timing of other stuff too.
+	Folder setup should be <user>/<path>
+	<user> can be a string if you want to compare different programs on the same input or . if you have no friends!
+	
+	As this program was made for AoC it supports the <day> and <year> options as an alternative to <path>,
+	wich are extended to the path <year>/<day>/<day>.out, where
+	<day> is a number between 1 and 25 (1 to 9 have leading 0s) or all wich will be expanded to the shell wildcard * and
+	<year> the year of the AoC.
+
+keys:
+	day: Number 1 to 25 (No leading 0's) or all (No standard value)
+	year: Number between 2015 and <last_aoc_problems> (Standard value = maximum year of range)
+	user: predicate for path (shell wildcards allowed) (Standard value = .)
+			(If the globbing of the user expands to multiple results the days will be seperated by hlines in the table)
+	path: Path to the executable to be tested (shell wildards allowed)
+	runs: Number of runs to be performed per program
+	tablstyle: Determines the style of the result table! Options are (utf16 for boxdrawing characters, utf8 for standard retro boxdrawing with +-|= or 
+			csv if the output should have standard csv format)
+	time-limit: If this value is set to something other than 0 further tests will be skipped if the total has exceeded that time limit (int seconds)
+	print-output: yes or no Determines if the outptus of each program should be printed to stdout. May still print discrepancies to stderr.
