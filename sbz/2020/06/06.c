@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-int main(int argc, char *argv){
+int main(int argc, char *argv[]){
 	int total1=0, total2=0;
 	
 	while(1){

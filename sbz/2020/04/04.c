@@ -10,7 +10,7 @@ struct passport * readPassport();
 
 int checkValidity(struct passport *);
 
-int main(int argc, char *argv){
+int main(int argc, char *argv[]){
 	
 	int valid1=0, valid2=0;
 	
@@ -107,7 +107,6 @@ struct passport * readPassport(){
 }
 
 int checkValidity(struct passport *passport){
-	static int pp=0;
 	char *endptr;
 	
 	long tmp=strtol(passport->byr, &endptr, 10);

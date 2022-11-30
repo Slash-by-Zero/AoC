@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-int main(int argc, char *argc[]){
-	int res1;
-	int res2;
+int main(int argc, char *argv[]){
+	int res1=0;
+	int res2=0;
 	
 	
 	

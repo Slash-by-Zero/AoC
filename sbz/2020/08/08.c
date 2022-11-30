@@ -13,7 +13,7 @@ struct instruction{
 	int visited;
 };
 
-int main(int argc, char *argv){
+int main(int argc, char *argv[]){
 	int programm_length=100;
 	struct instruction *programm=malloc(100*sizeof(*programm));
 	if(!programm) die("malloc");
