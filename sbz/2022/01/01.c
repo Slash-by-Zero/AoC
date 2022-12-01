@@ -11,8 +11,7 @@ int main(int argc, char *argv[]){
 	
 	for(;;){
 		int c = fgetc(stdin);
-		if(c == EOF) break;
-		else if(c == '\n'){
+		if(c == '\n'){
 			for(i=0;i<3;i++){
 				if(elf > top[i]){
 					memcpy(top+i+1, top+i, (2-i) << 2);
@@ -21,7 +20,7 @@ int main(int argc, char *argv[]){
 				}
 			}
 			elf = 0;
-		}
+		} else if(c == EOF) break;
 		else{
 			tmp = c - '0';
 			for(;;){
