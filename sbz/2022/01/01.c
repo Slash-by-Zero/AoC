@@ -3,21 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CUTOFF 3
-
 int main(int argc, char *argv[]){
 	int elf=0;
-	int tmp=0;
-	int top[CUTOFF];
+	int top[3];
+	int i, tmp, res2;
 	
-	while(1){
+	for(;;){
 		int c = fgetc(stdin);
 		if(c == EOF) break;
 		else if(c == '\n'){
-			for(int i=0;i<CUTOFF;i++)
-			{
+			for(i=0;i<3;i++){
 				if(elf > top[i]){
-					memcpy(top+i+1, top+i, CUTOFF-i-1);
+					memcpy(top+i+1, top+i, (2-i) << 2);
 					top[i] = elf;
 					break;
 				}
@@ -26,16 +23,18 @@ int main(int argc, char *argv[]){
 		}
 		else{
 			tmp = c - '0';
-			while(1){
+			for(;;){
 				c = fgetc(stdin);
-				if(c == '\n') break;
-				tmp = tmp * 10 + c - '0';
+				if(c == '\n' ) break;
+				tmp <<= 1;
+				tmp += tmp<<2;
+				tmp += c - '0';
 			}
 			elf += tmp;
 		}
 	}
 		
-	int res2 = top[0]+top[1]+top[2];
+	res2 = top[0]+top[1]+top[2];
 	
 	printf("Part 1: %d\nPart 2: %d\n", top[0], res2);
 }
