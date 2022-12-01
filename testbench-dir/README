@@ -30,4 +30,6 @@ keys:
 	tablstyle: Determines the style of the result table! Options are (utf16 for boxdrawing characters, utf8 for standard retro boxdrawing with +-|= or 
 			csv if the output should have standard csv format)
 	time-limit: If this value is set to something other than 0 further tests will be skipped if the total has exceeded that time limit (int seconds)
+	avg-delay: This value specifies a time in microseconds, that is to be deucted from the runtime of each run. Idealy this value is found by
+			running a program that just exits immediatly through the testbench (Standard value = 0)
 	print-output: yes or no Determines if the outptus of each program should be printed to stdout. May still print discrepancies to stderr.

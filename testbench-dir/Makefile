@@ -1,8 +1,10 @@
-CFLAGS = -g -D_XOPEN_SOURCE=700 -std=c11 -pedantic -Wall
+CFLAGS = -D_XOPEN_SOURCE=700 -std=c11 -pedantic -Wall
 CC = gcc
 
-.PHONY: all clean
+.PHONY: all debug clean
 
+debug: CFLAGS += -g
+debug: all
 all: testbench
 
 clean:

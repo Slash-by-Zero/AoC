@@ -3,7 +3,7 @@ CC = gcc
 
 sources = $(wildcard */*/*.c)
 outs = $(sources:%.c=%.out)
-debugs = $(sources:%.c=%.debug)
+debugs = $(sources:%.c=%.gout)
 
 .PHONY: o g clean
 
@@ -18,5 +18,5 @@ clean:
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-%.debug: %.c
+%.gout: %.c
 	$(CC) $(CFLAGS) -g -o $@ $<

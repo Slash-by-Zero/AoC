@@ -50,7 +50,7 @@ struct programResults{
 
 
 static FILE *shell;
-static long runs=1024, time_limit=0;
+static long runs=1024, avg_delay=0, time_limit=0;
 static char *cwd;
 static int printOutput=1;
 
@@ -142,10 +142,9 @@ int main(int argc, char *argv[]){
 	}
 	
 	char *user;
-	long runs=1024;
 	struct tabularStyle *style = &style_utf16;
 	
-	{ //Hadnling of all other options
+	{ //Handling of all other options
 		user=getValueByKey("user");
 		if(!user){
 			user=".";
@@ -189,10 +188,20 @@ int main(int argc, char *argv[]){
 			
 			if(time_limit < 0 || time_limit >= LONG_MAX/1000000){
 				fprintf(stderr, "time-limit must be a positive long! Given time-limite: %s\n", tmp);
-			exit(EXIT_FAILURE);
+				exit(EXIT_FAILURE);
 			}
 			
 			time_limit *= 1000000;
+		}
+		tmp = getValueByKey("avg-delay");
+		if(tmp){
+			errno = 0;
+			avg_delay = strtol(tmp, NULL, 0);
+			if(errno != 0) die("strtol");
+			if(avg_delay < 0){
+				fprintf(stderr, "avg-delay must be a positive long!\n");
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
 	
@@ -411,7 +420,7 @@ static void testProgram(struct programResults *res, char *path){
 		
 		long runtime =
 			(long)(end.tv_sec - start.tv_sec) * 1000000 +
-			(long)(end.tv_usec - start.tv_usec);
+			(long)(end.tv_usec - start.tv_usec) - avg_delay;
 		
 		res->total += runtime;
 		if(runtime > res->max) res->max = runtime;

@@ -29,7 +29,7 @@
 *.dylib
 
 # Executables
-*.debug
+*.gout
 *.exe
 *.out
 *.app
