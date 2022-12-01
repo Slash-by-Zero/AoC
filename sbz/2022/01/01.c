@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 int main(int argc, char *argv[]){
 	int elf=0;
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]){
 			elf += tmp;
 		}
 	}
-		
+	
 	res2 = top[0]+top[1]+top[2];
 	
 	printf("Part 1: %d\nPart 2: %d\n", top[0], res2);

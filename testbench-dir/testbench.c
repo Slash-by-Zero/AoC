@@ -317,7 +317,7 @@ static void testPaths(struct pathResults *res){
 		if(sprintf(input, "%s/input.txt", dirc) < 0) die("sprintf");
 		
 		if(!freopen(input, "r", stdin)){
-			fprintf(stderr, "%s/%s: ", res->path, res->results[0].user);
+			fprintf(stderr, "%s/%s/%s: ", cwd, res->results[0].user, res->path);
 			die("freopen");
 		}
 	}
