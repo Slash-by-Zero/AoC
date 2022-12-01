@@ -1,39 +1,41 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define CUTOFF 3
 
 int main(int argc, char *argv[]){
-	int res1=0;
-	int res2=0;
 	int elf=0;
-	int top3[3];
+	int tmp=0;
+	int top[CUTOFF];
 	
 	while(1){
-		char line[32];
-		
-		if(!fgets(line, 32, stdin)) break;
-		
-		
-		if(line[0] == '\n'){
-			if(elf > res1) res1 = elf;
-			for(int i = 0;i<3;i++){
-				if(elf > top3[i]){
-					int tmp = top3[i];
-					top3[i] = elf;
-					elf=tmp;
+		int c = fgetc(stdin);
+		if(c == EOF) break;
+		else if(c == '\n'){
+			for(int i=0;i<CUTOFF;i++)
+			{
+				if(elf > top[i]){
+					memcpy(top+i+1, top+i, CUTOFF-i-1);
+					top[i] = elf;
+					break;
 				}
 			}
 			elf = 0;
-			continue;
 		}
-		
-		int tmp=0;
-		for(int i=0; line[i] != '\n'; i++) tmp = tmp * 10 + line[i] - '0';
-		
-		elf += tmp;
+		else{
+			tmp = c - '0';
+			while(1){
+				c = fgetc(stdin);
+				if(c == '\n') break;
+				tmp = tmp * 10 + c - '0';
+			}
+			elf += tmp;
+		}
 	}
 		
-	res2 = top3[0]+top3[1]+top3[2];
+	int res2 = top[0]+top[1]+top[2];
 	
-	printf("Part 1: %d\nPart 2: %d\n", res1, res2);
+	printf("Part 1: %d\nPart 2: %d\n", top[0], res2);
 }

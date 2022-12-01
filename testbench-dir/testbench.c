@@ -497,7 +497,7 @@ static char *convTime(long time, int length){
 void printResults(struct pathResults *results, struct tabularStyle *style){
 	if(!results || !results->results) exit(2);
 	
-	int max_path=0, max_user=0, max_time=0;
+	int max_path=4, max_user=4, max_time=9;
 	
 	for(struct pathResults *walk=results; walk ; walk=walk->next){
 		if(strlen(walk->path) > max_path) max_path = strlen(walk->path);
