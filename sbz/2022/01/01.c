@@ -27,10 +27,12 @@ int main(int argc, char *argv[]){
 			continue;
 		}
 		
-		elf += strtol(line, NULL, 10);
+		int tmp=0;
+		for(int i=0; line[i] != '\n'; i++) tmp = tmp * 10 + line[i] - '0';
 		
+		elf += tmp;
 	}
-	
+		
 	res2 = top3[0]+top3[1]+top3[2];
 	
 	printf("Part 1: %d\nPart 2: %d\n", res1, res2);
