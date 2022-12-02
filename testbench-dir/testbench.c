@@ -310,6 +310,10 @@ int main(int argc, char *argv[]){
 	
 	globfree(&globbuf);
 	free(cwd);
+	{
+		char tmp;
+		if(&tmp > path) free(path); //Check if path is on heap if yes free
+	}
 }
 
 static void testPaths(struct pathResults *res){
@@ -479,8 +483,8 @@ cleanup_test:
 }
 
 static char *convTime(long time, int length){
-	static int buf_len=0;
-	static char *buf=NULL;
+	static int buf_len = 0;
+	static char *buf = NULL;
 	if(((int) log10(time)) + 6 > buf_len){
 		buf_len=((int) log10(time)) + 6;
 		buf = realloc(buf, buf_len);
@@ -506,7 +510,7 @@ static char *convTime(long time, int length){
 void printResults(struct pathResults *results, struct tabularStyle *style){
 	if(!results || !results->results) exit(2);
 	
-	int max_path=4, max_user=4, max_time=9;
+	int max_path=4, max_user=4, max_time=1;
 	
 	for(struct pathResults *walk=results; walk ; walk=walk->next){
 		if(strlen(walk->path) > max_path) max_path = strlen(walk->path);
@@ -517,7 +521,6 @@ void printResults(struct pathResults *results, struct tabularStyle *style){
 	}
 	
 	max_time+=4;
-	if(max_time<5) max_time=5;
 	int hline_length=max_path+max_user+((int) log10(runs))+4*max_time+31;
 	
 	fprintf(shell, "%-*s %s ", max_path, "PATH", style->vdash);

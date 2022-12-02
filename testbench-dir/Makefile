@@ -3,10 +3,11 @@ CC = gcc
 
 .PHONY: all debug clean
 
-debug: CFLAGS += -g
+debug: clean CFLAGS += -g
 debug: all
-all: testbench.out
 
+all: testbench
+	
 clean:
 	rm -f *.o
 	rm -f *.gch
@@ -14,10 +15,10 @@ clean:
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
-%.out: %.o
+%: %.o
 	$(CC) $(CFLAGS) -o ../$@ $^
 
-testbench.out: testbench.o cmdline.o -lm
+testbench: testbench.o cmdline.o -lm
 
 testbench.o: testbench.c cmdline.h
 

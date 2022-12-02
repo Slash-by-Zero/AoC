@@ -84,7 +84,7 @@ int cmdlineInit(int argc, char *argv[]){
 	}
 eof_init:
 	
-	if(fclose(konfig) != 0) return -1;
+	if(konfig && fclose(konfig) != 0) return -1;
 	
 	int i=1;
 	for(;i<argc;i++){
@@ -106,7 +106,7 @@ eof_init:
 cleanup_init:
 	free(line);
 	int tmp = errno;
-	if(fclose(konfig) != 0) return -1;
+	if(konfig && fclose(konfig) != 0) return -1;
 	errno = tmp;
 	return -1;
 }
