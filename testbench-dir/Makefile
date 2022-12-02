@@ -5,7 +5,7 @@ CC = gcc
 
 debug: CFLAGS += -g
 debug: all
-all: testbench
+all: testbench.out
 
 clean:
 	rm -f *.o
@@ -14,10 +14,10 @@ clean:
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
-%: %.o
+%.out: %.o
 	$(CC) $(CFLAGS) -o ../$@ $^
 
-testbench: testbench.o cmdline.o -lm
+testbench.out: testbench.o cmdline.o -lm
 
 testbench.o: testbench.c cmdline.h
 

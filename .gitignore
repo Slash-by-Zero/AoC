@@ -1,3 +1,5 @@
+*.conf
+
 # Prerequisites
 *.d
 
