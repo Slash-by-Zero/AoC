@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
 		opponent = fgetc(stdin) - ('A'- 2);
 		if(opponent == newline) break;
 		fgetc(stdin);
-		you=fgetc(stdin)-'R';
+		you=fgetc(stdin) - ('X' - 6);
 		fgetc(stdin);
 		res1 += you + 3 * ((you - opponent)%3);
 		res2 += you * 3 +  (you + opponent)%3;
