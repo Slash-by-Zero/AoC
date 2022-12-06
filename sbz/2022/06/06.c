@@ -19,10 +19,10 @@ int main(int argc, char *argv[]){
 		last[0] = c;
 		if(contained[c]){
 			for(i = 3; last[i] != c; i--){
-				contained[last[i]] = 0;
+				contained[(int) last[i]] = 0;
 			}
-			distinct -= i;
-			memset(last+i
+			distinct = i;
+			memset(last+i, 0, 4-i);
 		}
 		else{
 			contained[c] = 1;
@@ -39,9 +39,10 @@ int main(int argc, char *argv[]){
 		last[0] = c;
 		if(contained[c]){
 			for(i = 13; last[i] != c; i--){
-				contained[last[i]] = 0;
+				contained[(int) last[i]] = 0;
 			}
-			distinct -= i;
+			distinct = i;
+			memset(last+i, 0, 14-i);
 		}
 		else if(++distinct == 14) break;
 		else contained[c] = 1;
