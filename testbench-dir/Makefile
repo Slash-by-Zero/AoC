@@ -3,7 +3,8 @@ CC = gcc
 
 .PHONY: all debug clean
 
-debug: clean CFLAGS += -g
+debug: clean 
+debug: CFLAGS += -g
 debug: all
 
 all: testbench
