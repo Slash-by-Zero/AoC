@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 			tmp = c - '0';
 			for(;;){
 				c = fgetc(stdin);
-				if(c == '\n' ) break;
+				if(c == '\n') break;
 				tmp <<= 1;
 				tmp += tmp<<2;
 				tmp += c - '0';
