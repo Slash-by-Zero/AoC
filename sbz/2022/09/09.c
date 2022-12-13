@@ -44,10 +44,6 @@ int main(int argc, char *argv[]){
 					y[j]+=sign(y[j-1]-y[j]);
 				}
 			}
-			if(y[1] < -arr_off || y[1] >= arr_size-arr_off || x[1] < -arr_off || x[1] >= arr_size-arr_off){
-				fprintf(stderr, "Arr not big enough");
-				exit(EXIT_FAILURE);
-			}
 			if(!arr[0][x[1]+arr_off][y[1]+arr_off]){
 				arr[0][x[1]+arr_off][y[1]+arr_off] = 1;
 				res1++;
