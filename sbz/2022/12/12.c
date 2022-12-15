@@ -6,13 +6,8 @@
 
 #define MAX_LINE_LENGTH 128
 
-struct Node{
-	int x, y, dist;
-	struct Node *next;
-};
-
 int main(int argc, char *argv[]){
-	long res1=0, res2=0;
+	long res1, res2;
 	char line[MAX_LINE_LENGTH][MAX_LINE_LENGTH];
 	int width=0, height=0;
 	
@@ -39,72 +34,41 @@ int main(int argc, char *argv[]){
 		}
 	}
 	
-	int dist;
-	struct Node *curr = malloc(sizeof(*curr));
-	curr->x = xE;
-	curr->y = yE;
-	curr->next = NULL;
-	
-	struct Node *next=NULL, **last=&next;
-	
+	int dists[height][width], checked[height][width];
+	memset(dists, 0, height*width*4);
+	memset(checked, 0, height*width*4);
+	dists[yE][xE]=1;
 	for(;;){
-		if(curr == NULL){
-			curr = next;
-			next = NULL;
-			last = &next;
-			dist++;
+		int x, y, dist = INT_MAX;
+		for(int i=0;i<height;i++){
+			for(int j=0;j<width;j++){
+				if(dists[i][j] != 0 && !checked[i][j] && dists[i][j] < dist){
+					dist = dists[i][j];
+					y = i;
+					x = j;
+				}
+			}
 		}
 		
-		int x = curr->x, y=curr->y;
-		
-		if(res2 == 0 && line[y][x] == 'a') res2 = dist;
-		
+		checked[y][x] = 1;
 		if(y == yS && x == xS) break;
 		char el = line[y][x] - 1;
 		
-		if(el == '\0'-1){
-			struct Node *tmp=curr;
-			curr=curr->next;
-			free(tmp);
-			continue;
-		}
-		
-		line[y][x] = '\0';
-		
-		if(x > 0 && line[y][x-1] >= el){
-			(*last) = malloc(sizeof(**last));
-			(*last)->x=x-1;
-			(*last)->y=y;
-			(*last)->next=NULL;
-			last=&((*last)->next);
-		}
-		if(y > 0 && line[y-1][x] >= el){
-			(*last) = malloc(sizeof(**last));
-			(*last)->x=x;
-			(*last)->y=y-1;
-			(*last)->next=NULL;
-			last=&((*last)->next);
-		}
-		if(x < width-1 && line[y][x+1] >= el){
-			(*last) = malloc(sizeof(**last));
-			(*last)->x=x+1;
-			(*last)->y=y;
-			(*last)->next=NULL;
-			last=&((*last)->next);
-		}
-		if(y < height-1 && line[y+1][x] >= el){
-			(*last) = malloc(sizeof(**last));
-			(*last)->x=x;
-			(*last)->y=y+1;
-			(*last)->next=NULL;
-			last=&((*last)->next);
-		}
-		
-		struct Node *tmp=curr;
-		curr=curr->next;
-		free(tmp);
+		if(x > 0 && line[y][x-1] >= el && (dist+1 < dists[y][x-1] || dists[y][x-1] == 0)) dists[y][x-1] = dist+1;
+		if(y > 0 && line[y-1][x] >= el && (dist+1 < dists[y-1][x] || dists[y-1][x] == 0)) dists[y-1][x] = dist+1;
+		if(x < width-1 && line[y][x+1] >= el && (dist+1 < dists[y][x+1] || dists[y][x+1] == 0)) dists[y][x+1] = dist+1;
+		if(y < height-1 && line[y+1][x] >= el && (dist+1 < dists[y+1][x] || dists[y+1][x] == 0)) dists[y+1][x] = dist+1;
 	}
-	res1 = dist;
+	res1 = dists[yS][xS] - 1;
+	
+	res2 = res1;
+	for(int i=0;i<height;i++){
+		for(int j=0;j<width;j++){
+			if(dists[i][j] < res2 && dists[i][j] != 0 && line[i][j] == 'a'){
+				res2 = dists[i][j] - 1;
+			}
+		}
+	}
 	
 	printf("Part 1: %ld\nPart 2: %ld\n", res1, res2);
 }
