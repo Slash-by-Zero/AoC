@@ -7,12 +7,12 @@
 #define MAX_LINE_LENGTH 128
 
 struct Node{
-	int x, y, dist;
+	int x, y;
 	struct Node *next;
 };
 
 int main(int argc, char *argv[]){
-	long res1=0, res2=0;
+	long res2=0;
 	char line[MAX_LINE_LENGTH][MAX_LINE_LENGTH];
 	int width=0, height=0;
 	
@@ -39,19 +39,19 @@ int main(int argc, char *argv[]){
 		}
 	}
 	
-	int dist;
+	int dist=0;
 	struct Node *curr = malloc(sizeof(*curr));
 	curr->x = xE;
 	curr->y = yE;
 	curr->next = NULL;
 	
-	struct Node *next=NULL, **last=&next;
+	struct Node *next=NULL;
+	struct Node *tmp;
 	
 	for(;;){
 		if(curr == NULL){
 			curr = next;
 			next = NULL;
-			last = &next;
 			dist++;
 		}
 		
@@ -72,39 +72,38 @@ int main(int argc, char *argv[]){
 		line[y][x] = '\0';
 		
 		if(x > 0 && line[y][x-1] >= el){
-			(*last) = malloc(sizeof(**last));
-			(*last)->x=x-1;
-			(*last)->y=y;
-			(*last)->next=NULL;
-			last=&((*last)->next);
+			tmp = malloc(sizeof(*tmp));
+			tmp->x=x-1;
+			tmp->y=y;
+			tmp->next=next;
+			next=tmp;
 		}
 		if(y > 0 && line[y-1][x] >= el){
-			(*last) = malloc(sizeof(**last));
-			(*last)->x=x;
-			(*last)->y=y-1;
-			(*last)->next=NULL;
-			last=&((*last)->next);
+			tmp = malloc(sizeof(*tmp));
+			tmp->x=x;
+			tmp->y=y-1;
+			tmp->next=next;
+			next=tmp;
 		}
 		if(x < width-1 && line[y][x+1] >= el){
-			(*last) = malloc(sizeof(**last));
-			(*last)->x=x+1;
-			(*last)->y=y;
-			(*last)->next=NULL;
-			last=&((*last)->next);
+			tmp = malloc(sizeof(*tmp));
+			tmp->x=x+1;
+			tmp->y=y;
+			tmp->next=next;
+			next=tmp;
 		}
 		if(y < height-1 && line[y+1][x] >= el){
-			(*last) = malloc(sizeof(**last));
-			(*last)->x=x;
-			(*last)->y=y+1;
-			(*last)->next=NULL;
-			last=&((*last)->next);
+			tmp = malloc(sizeof(*tmp));
+			tmp->x=x;
+			tmp->y=y+1;
+			tmp->next=next;
+			next=tmp;
 		}
 		
 		struct Node *tmp=curr;
 		curr=curr->next;
 		free(tmp);
 	}
-	res1 = dist;
 	
-	printf("Part 1: %ld\nPart 2: %ld\n", res1, res2);
+	printf("Part 1: %d\nPart 2: %ld\n", dist, res2);
 }
