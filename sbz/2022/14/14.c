@@ -9,7 +9,7 @@
 #define sign(x) ((x>0) - (x<0))
 
 int main(int argc, char *argv[]){
-	long res1=0, res2=1;
+	long res1=0, res2=0;
 	char line[MAX_LINE_LENGTH];
 	
 	int cave[256][1024];
@@ -50,27 +50,25 @@ int main(int argc, char *argv[]){
 	
 	int part1=1;
 	
-	for(;;res2++){
-		int x=500, y=0;
-		for(;part1;y++){
-			if(y+1 > maxy) part1=0;
-			else if((cave[y+1][x]&3) == 0);
-			else if((cave[y+1][x-1]&3) == 0) x--;
-			else if((cave[y+1][x+1]&3) == 0) x++;
-			else break;
+	int stack[256];
+	stack[0] = 500;
+	
+	for(int y=0;;y++){
+		if(y > maxy);
+		else if((cave[y+1][stack[y]]) == 0) {stack[y+1]=stack[y]; continue;}
+		else if((cave[y+1][stack[y]-1]) == 0) {stack[y+1]=stack[y]-1; continue;}
+		else if((cave[y+1][stack[y]+1]) == 0) {stack[y+1]=stack[y]+1; continue;}
+		
+		if(part1 && y > maxy){
+			res1 = res2;
+			part1 = 0;
 		}
-		if(part1) cave[y][x] |= 1;
-		if(part1) res1++;
-		x=500; y=0;
-		for(;;y++){
-			if(y+1 > maxy+1) break;
-			else if((cave[y+1][x]&6) == 0);
-			else if((cave[y+1][x-1]&6) == 0) x--;
-			else if((cave[y+1][x+1]&6) == 0) x++;
-			else break;
-		}
-		cave[y][x] |= 4;
-		if(x==500 && y==0) break;
+		
+		cave[y][stack[y]] = 1;
+		
+		res2++;
+		if(y==0) break;
+		y-=2;
 	}
 	
 	printf("Part 1: %ld\nPart 2: %ld\n", res1, res2);
