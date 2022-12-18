@@ -57,39 +57,28 @@ int main(int argc, char *argv[]){
 	for(;;){
 		int c=fgetc(stdin);
 		if(c == EOF || c == '\n'){
-			tracker[tracker_count].cycle = cycle;
-			tracker[tracker_count].max = max;
-			
-			for(int i=0;i<14;i++){
-				for(int j=0;j<7;j++){
-					tracker[tracker_count].top[i][j] = cave[max-i][j];
-				}
-			}
-			
-			tracker_count++;
-			
-			/*for(int i=max;i>=max-20;i--){
-				printf("|");
-				for(int j=0;j<7;j++){
-					printf("%c", cave[i][j] ? '#' : '.');
-				}
-				printf("|\n");
-			}
-			printf("+-------+\n\n");
-			
-			printf("%d %d\n", tracker[tracker_count-1].max, tracker[tracker_count-1].cycle);
-			
-			sleep(1);*/
-			
-			int length = cycle>2022 ? hasCycle(&tracker[0], tracker_count) : 0;
-			
-			if(cycle > 2022 && length != 0){
-				int prev_diff = tracker[tracker_count-1].cycle - tracker[tracker_count-1-length].cycle;
-				int max_diff = tracker[tracker_count-1].max - tracker[tracker_count-1-length].max;
+			if(cycle > 2022){
+				tracker[tracker_count].cycle = cycle;
+				tracker[tracker_count].max = max;
 				
-				long tmp = (1000000000000-cycle)/prev_diff;
-				res2 = tmp * (max_diff);
-				term_on = cycle + (1000000000000-cycle)%prev_diff;
+				for(int i=0;i<14;i++){
+					for(int j=0;j<7;j++){
+						tracker[tracker_count].top[i][j] = cave[max-i][j];
+					}
+				}
+				
+				tracker_count++;
+				
+				int length = hasCycle(&tracker[0], tracker_count);
+				
+				if(length != 0){
+					int prev_diff = tracker[tracker_count-1].cycle - tracker[tracker_count-1-length].cycle;
+					int max_diff = tracker[tracker_count-1].max - tracker[tracker_count-1-length].max;
+					
+					long tmp = (1000000000000-cycle)/prev_diff;
+					res2 = tmp * (max_diff);
+					term_on = cycle + (1000000000000-cycle)%prev_diff;
+				}
 			}
 			
 			rewind(stdin);
@@ -109,7 +98,7 @@ int main(int argc, char *argv[]){
 		x += c - '=';
 		
 		for(int i=0;i<4;i++){
-			if((x)<0){
+			if(x<0){
 				push=0;
 				break;
 			}
