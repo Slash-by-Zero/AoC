@@ -42,7 +42,7 @@ int main(int argc, char* argv[]){
 	
 	for(int ti=0;ti<node_count;ti++){
 		int i=exist[ti];
-		if(flow[i] != 0) continue;
+		//if(flow[i] != 0) continue;
 		for(int tj=0;tj<node_count;tj++){
 			int j=exist[tj];
 			if(adj[i][j] == 0) continue;
@@ -77,17 +77,16 @@ int main(int argc, char* argv[]){
 				int k=exist[tk];
 				if(adj[i][k] == 0) continue;
 				
-				int new = abs(adj[i][k]) + abs(adj[i][j]);
-				if(new < abs(adj[j][k]) || adj[j][k] == 0){
-					adj[j][k] = -new;
-					adj[k][j] = -new;
-				}
+				int total = abs(adj[i][k]) + abs(adj[i][j]);
+				if(abs(adj[i][k]) * flow[i] > (total - abs(adj[j][k])) * flow[k]) adj[j][k] = -abs(adj[j][k]);
+				if(abs(adj[i][j]) * flow[i] > (total - abs(adj[k][j])) * flow[j]) adj[k][j] = -abs(adj[k][j]);
 			}
 		}
 	}
 	
 	res1 = calcPressure(0, 0);
 	res2 = calcPressure2(0,0,0,0);
+	
 	
 	printf("Part 1: %ld\nPart 2: %ld\n", res1, res2);
 }
@@ -144,14 +143,16 @@ int calcPressure2(int time, int curr, int other_time, int other){
 		if(tmp > max) max = tmp;
 	}
 	
-	for(int ti=0;ti<node_count;ti++){
-		int i=exist[ti];
-		if(adj[curr][i] >= 0 || flow[i] == 0 || time-adj[curr][i]+1 >= 26 || i == other) continue;
-		int new = time - adj[curr][i];
-		int tmp;
-		if(new < other_time) tmp = calcPressure2(new, i, other_time, other);
-		else tmp = calcPressure2(other_time, other, new, i);
-		if(tmp > max) max = tmp;
+	if(max == 0){
+		for(int ti=0;ti<node_count;ti++){
+			int i=exist[ti];
+			if(adj[curr][i] >= 0 || flow[i] == 0 || time-adj[curr][i]+1 >= 26 || i == other) continue;
+			int new = time - adj[curr][i];
+			int tmp;
+			if(new < other_time) tmp = calcPressure2(new, i, other_time, other);
+			else tmp = calcPressure2(other_time, other, new, i);
+			if(tmp > max) max = tmp;
+		}
 	}
 	
 	if(max == 0 && other_time != INT_MAX) max = calcPressure2(other_time, other, INT_MAX, 0);
