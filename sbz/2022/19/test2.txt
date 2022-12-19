@@ -1,0 +1,1 @@
+Blueprint 30: Each ore robot costs 344 ore. Each clay robot costs 444 ore. Each obsidian robot costs 244 ore and 15 clay. Each geode robot costs 22 ore and 0 obsidian
