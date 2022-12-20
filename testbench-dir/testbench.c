@@ -373,7 +373,7 @@ static void testProgram(struct programResults *res, char *path){
 	FILE *buf, *first_buf=NULL;
 	int exit_code;
 	
-	for(res->count = 0; res->count < runs; res->count++){
+	for(res->count = 0; res->count < runs;){
 		buf=tmpfile(); //create tmpfile for the program output
 		
 		int oldflags = fcntl(fileno(buf), F_GETFD, 0); //Making sure buf will only be accessable through stdout
@@ -429,6 +429,7 @@ static void testProgram(struct programResults *res, char *path){
 		res->total += runtime;
 		if(runtime > res->max) res->max = runtime;
 		if(runtime < res->min) res->min = runtime;
+		res->count++;
 		
 		rewind(buf);
 		
