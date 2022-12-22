@@ -6,16 +6,46 @@
 
 #define MAX_LINE_LENGTH 256
 
+static int map[256][256];
+static int cubeSize = INT_MAX;
+static int move[4][2] = {{0,1},{1,0},{0,-1},{-1,0}};
+
+static void calcEdges(){
+	int x=0, y=1, dir=0;
+	
+	int pos;
+	
+	int edges[3*4];
+	memset(edges, 0, 3*4*4);
+	
+	int coords[3]={0,0,0};
+	int dir3d={0,0,1};
+	
+	for(int i=0;i<14;i++){
+		x += move[dir][1] * (cubeSize-1);
+		y += move[dir][0] * (cubeSize-1);
+		
+		
+		int i;
+		for(i=-1;i<=1;i++) if(map[y+move[(dir+i+4)%4][0]][x+move[(dir+i+4)%4][1]] & ~1 == 0) dir=(dir+i+4)%4;
+		
+		if(i == -1){
+			for(int;
+		}
+		else if(i==0){
+			
+		}
+	}
+}
+
 int main(int argc, char *argv[]){
 	long res1=0, res2=1;
 	char line[MAX_LINE_LENGTH];
 	
-	int map[256][256];
 	memset(map, 0xff, 256*256*sizeof(int));
 	
 	int row=1;
 	
-	int cubeSize = INT_MAX;
 	
 	for(;;){
 		if(!fgets(line, MAX_LINE_LENGTH, stdin) || strlen(line)<=1) break;
@@ -36,7 +66,6 @@ int main(int argc, char *argv[]){
 	int x=1, y=1;
 	int dir=0;
 	
-	int move[4][2] = {{0,1},{1,0},{0,-1},{-1,0}};
 	
 	for(x=1; map[y][x] != 0;x++);
 	
@@ -73,6 +102,10 @@ int main(int argc, char *argv[]){
 part1f:
 	
 	res1 = 1000*y+4*x+dir;
+	
+	calcEdges();
+	
+	//TODO: run part 2
 	
 	printf("Part 1: %ld\nPart 2: %ld\n", res1, res2);
 }
