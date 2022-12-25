@@ -175,30 +175,14 @@ static struct elf *turnInternal(struct elf *proposals, struct elf *top, struct e
 	return proposals;
 }
 
-static void enter(struct elf *top, int *cove){
-	if(!top) return;
-	cove[(top->y-miny)*(maxx-minx+1)+top->x-minx] = 1;
-	enter(top->right, cove);
-	enter(top->left, cove);
-}
-
 static struct elf *turn(struct elf *top){
 	minx=INT_MAX; miny = INT_MAX; maxx = INT_MIN; maxy = INT_MIN;
 	change=0;
+	
 	struct elf *new = turnInternal(NULL, top, top);
-	/*int cove[(maxx-minx+1)*(maxy-miny+1)];
-	memset(cove, 0, sizeof(cove));
-	enter(new, cove);
-	for(int i=0;i<maxy-miny+1; i++){
-		for(int j=0;j<maxx-minx+1;j++){
-			if(cove[i*(maxx-minx+1)+j]) printf("#");
-			else printf(".");
-		}
-		printf("\n");
-	}
-	printf("\n");*/
 	freeElf(top);
 	int tmp=prios[0];
+	
 	memcpy(prios, prios+1, 12);
 	prios[3]=tmp;
 	return new;
@@ -230,7 +214,7 @@ int main(int argc, char *argv[]){
 	
 	res1 += (maxx-minx+1) * (maxy-miny+1);
 	
-	for(res2=9;change;res2++) top=turn(top);
+	for(res2=10;change;res2++) top=turn(top);
 	
 	printf("Part 1: %ld\nPart 2: %ld\n", res1, res2);
 }
