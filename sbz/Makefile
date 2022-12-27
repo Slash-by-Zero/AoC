@@ -1,10 +1,11 @@
 CFLAGS = -pedantic -std=c11 -D_XOPEN_SOURCE=700 -Wall
+SFLAGS = -nostartfiles -nostdlib -nodefaultlibs -nolibc
 CC = gcc
 
 sources = $(wildcard */*/*.c) \
-	$(wildcard */*/*.S
+	$(wildcard */*/*.S)
 outs = $(sources:%.c=%.out) \
-	$(sources:%.S=%.out
+	$(sources:%.S=%.out)
 debugs = $(outs:%.out=%.gout)
 
 .PHONY: o g clean
@@ -22,10 +23,10 @@ clean:
 	$(CC) $(CFLAGS) -o $@ $^
 	
 %.out: %.S
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(SFLAGS) -o $@ $^
 
-%.gout: %.S
+%.gout: %.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 %.gout: %.S
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) $(SFLAGS) -o $@ $<
