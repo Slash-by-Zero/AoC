@@ -1,6 +1,6 @@
 .text
-.global main
-main:
+.global _start
+_start:
 	sub $0x100, %rsp
 	mov %rsp, %rsi
 	xor %r8, %r8
@@ -84,6 +84,6 @@ parse_res1:
 	mov $0x1, %rdi
 	mov $0x1, %rax
 	syscall
-	add %rbx, %rsp
-	xor %rax, %rax
-	ret
+	mov $0x3c, %rax
+	xor %rdi, %rdi
+	syscall
