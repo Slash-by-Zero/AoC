@@ -4,8 +4,7 @@ CC = gcc
 
 sources = $(wildcard */*/*.c) \
 	$(wildcard */*/*.S)
-outs = $(sources:%.c=%.out) \
-	$(sources:%.S=%.out)
+outs = $(sources:%.?=%.out)
 debugs = $(outs:%.out=%.gout)
 
 .PHONY: o g clean
