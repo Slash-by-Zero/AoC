@@ -4,7 +4,7 @@ CC = gcc
 
 sources = $(wildcard */*/*.c) \
 	$(wildcard */*/*.S)
-outs = $(sources:%.?=%.out)
+outs = $(filter %.out, $(sources:%.c=%.out) \ $(sources:%.S=%.out))
 debugs = $(outs:%.out=%.gout)
 
 .PHONY: o g clean
@@ -19,10 +19,10 @@ clean:
 	rm -f $(debugs)
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $<
 	
 %.out: %.S
-	$(CC) $(CFLAGS) $(SFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(SFLAGS) -o $@ $<
 
 %.gout: %.c
 	$(CC) $(CFLAGS) -o $@ $<
