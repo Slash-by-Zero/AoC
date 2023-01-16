@@ -10,50 +10,50 @@ _start:
 	xor %rbx, %rbx
 	mov $0x0a, %r13
 	mov $0x3, %r12
-lbody_read:
+.lbody_read:
 	mov $0x100, %rdx
 	xor %rdi, %rdi
 	mov %rax, %rbx
 	xor %rax, %rax
 	syscall
 	cmp $0x0, %rax
-	jle done
+	jle .done
 	xchg %rax, %rbx
-lbody_2:
+.lbody_2:
 	mov (%rsp, %rdi, 0x1), %r8b
 	add $0x1, %rdi
 	cmp $0x0a, %r8b
-	je else
+	je .else
 	sub $0x30, %r8b
 	mul %r13
 	add %r8, %rax
 	cmp %rdi, %rbx
-	jg lbody_2
-	jmp lbody_read
-else:
+	jg .lbody_2
+	jmp .lbody_read
+.else:
 	xor %rdx, %rdx
 	div %r12
 	cmp $0x0, %rax
-	je done
+	je .done
 	sub $0x02, %rax
 	add %rax, %r14
-lbody_part2:
+.lbody_part2:
 	add %rax, %r15
 	xor %rdx, %rdx
 	div %r12
 	sub $0x02, %rax
-	jg lbody_part2
+	jg .lbody_part2
 	xor %rax, %rax
 	cmp %rdi, %rbx
-	jg lbody_2
-	jmp lbody_read
-done:
+	jg .lbody_2
+	jmp .lbody_read
+.done:
 	add $0x100, %rsp
 	mov %r15, %rax
 	xor %rbx, %rbx
 	sub $0x01, %rsp
 	movb $0x0a, (%rsp)
-parse_res2:
+.parse_res2:
 	add $0x1, %rbx
 	xor %rdx, %rdx
 	div %r13
@@ -61,13 +61,13 @@ parse_res2:
 	sub $0x1, %rsp
 	mov %dl, (%rsp)
 	test %rax, %rax
-	jnz parse_res2
+	jnz .parse_res2
 	mov $0x203a322074726150, %rdx
 	push %rdx
 	mov %r14, %rax
 	sub $0x01, %rsp
 	movb $0x0a, (%rsp)
-parse_res1:
+.parse_res1:
 	add $0x1, %rbx
 	xor %rdx, %rdx
 	div %r13
@@ -75,7 +75,7 @@ parse_res1:
 	sub $0x1, %rsp
 	mov %dl, (%rsp)
 	test %rax, %rax
-	jnz parse_res1
+	jnz .parse_res1
 	mov $0x203a312074726150, %rdx
 	push %rdx
 	add $0x12, %rbx
