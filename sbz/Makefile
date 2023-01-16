@@ -1,5 +1,5 @@
 CFLAGS = -pedantic -std=c11 -D_XOPEN_SOURCE=700 -Wall
-SFLAGS = -nostartfiles -nostdlib -nodefaultlibs -nolibc
+SFLAGS = -nolibc -nostdlib 
 CC = gcc
 
 sources = $(wildcard */*/*.c) \
