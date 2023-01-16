@@ -76,5 +76,5 @@ int main(int argc, char *argv[]){
 		if(all[i] > stack[0] - 40000000 && all[i] < res2) res2 = all[i];
 	}
 	
-	printf("Part 1: %d\nPart 2: %d\n", res1, res2);
+	printf("Part 1: %ld\nPart 2: %ld\n", res1, res2);
 }
