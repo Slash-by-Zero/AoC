@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_LINE_LENGTH 512
+
+static int dirs[8][2] = {{1,0}, {1,1}, {0,1}, {-1,1}, {-1,0},{-1,-1},{0,-1},{1,-1}};
+
 void die(char *msg){
 	perror(msg);
 	exit(EXIT_FAILURE);
@@ -10,119 +14,88 @@ void die(char *msg){
 
 
 int main(int argc, char *argv[]){
-	int rows=0, columns=1;
-	int layout_length=16;
-	int **layout=calloc(layout_length, sizeof(*layout));
-	if(!layout) die("calloc");
+	int res1=0, res2=0;
 	
-	{
-		char *line=malloc(1);
-		if(!line) die("malloc");
-		
-		do{
-			line=realloc(line, columns+=127);
-			if(!line) die("realloc");
-			
-			char *retVal=fgets(line+columns-128, 128, stdin);
-			
-			if(feof(stdin)){
-				printf("Input is expected to be more than one line otherwise jsut count the L's!\n");
-				exit(EXIT_FAILURE);
-			}
-			if(!retVal || ferror(stdin)) die("fgets");
-		}while(line[strlen(line)-1]!='\n');
-		
-		line[strlen(line)-1]='\0';
-		
-		layout[0]=malloc(strlen(line)*sizeof(**layout));
-		if(!layout[0]) die("malloc");
-		
-		for(int i=0;i<strlen(line);i++){
-			layout[0][i]=(line[i]-76)/30;
-		}
-		
-		columns=strlen(line);
-		
-		free(line);
-	}
+	char input[MAX_LINE_LENGTH][MAX_LINE_LENGTH][2];
 	
-	for(rows=1;1;rows++){
-		char line[columns+2];
-		
-		char *retVal=fgets(line, columns+2, stdin);
-		if(feof(stdin)) break;
-		if(!retVal || ferror(stdin)) die("fgets");
-		
-		line[strlen(line)-1]='\0';
-		
-		if(rows>=layout_length){
-			layout_length+=16;
-			layout=realloc(layout, layout_length*sizeof(*layout));
-			if(!layout) die("realloc");
-		}
-		
-		layout[rows]=malloc(columns*sizeof(**layout));
-		if(!layout[rows]) die("malloc");
-		
-		for(int i=0;i<strlen(line);i++){
-			layout[rows][i]=(line[i]-76)/30;
-		}
-	}
+	char line[MAX_LINE_LENGTH];
 	
-	rows--;
-	
-	int occupied=0;
-	
-	while(1){
-		int **next=malloc(sizeof(*next)*rows), neighbours[rows][columns], last_row[columns];
-		if(!next) die("malloc");
-		
-		for(int i=0;i<rows;i++){
-			next[i]=malloc(sizeof(**next)*columns);
-			if(!next[i]) die("malloc");
-			
-			for(int j=0;j<columns;j++){
-				int tmp=layout[i][j]>0?1:0;
-				
-				if(j>0) tmp+=layout[i][j-1]>0?1:0;
-				if(j<columns-1) tmp+=layout[i][j+1]>0?1:0;
-				
-				neighbours[i][j]=tmp;
-				if(i>0){
-					neighbours[i-1][j]+=tmp;
-					neighbours[i][j]+=last_row[j];
-				}
-				last_row[j]=tmp;
+	int rows = 0, columns = 0;
+	for(;;){
+		if(!fgets(line, MAX_LINE_LENGTH, stdin) || strlen(line) <= 1) break;
+		line[strlen(line)-1] = '\0';
+		columns = strlen(line);
+		for(int i=0;i<columns;i++){
+			if(line[i] == '.') memset(input[rows][i], 0x9f, 2);
+			else {
+				memset(input[rows][i], 0x30, 2);
+				res1++;
 			}
 		}
-		
-		int change=0;
+		rows++;
+	}
+	
+	res2=res1;
+	
+	for(;;){
+		int change = 0;
 		
 		for(int i=0;i<rows;i++){
 			for(int j=0;j<columns;j++){
-				if(layout[i][j]==0 && neighbours[i][j]==0){
-					change=1;
-					occupied++;
-					next[i][j]=1;
+				if(input[i][j][0] < 0) {
+					continue;
 				}
-				else if(layout[i][j]==1 && neighbours[i][j]>=5){
-					change=1;
-					occupied--;
-					next[i][j]=0;
+				
+				input[i][j][0] = (input[i][j][0] << 1) & 0x40;
+				input[i][j][0] |= input[i][j][0] >> 1;
+				
+				input[i][j][1] = (input[i][j][1] << 1) & 0x40;
+				input[i][j][1] |= input[i][j][1] >> 1;
+				
+				
+				for(int dir = 0; dir < 8; dir++){
+					int x=j+dirs[dir][0], y=i+dirs[dir][1];
+					if(x<0 || x>=columns || y<0 || y>=rows) continue;
+					if((input[y][x][0] & (dir < 4 ? 0x20 : 0x40)) != 0) {
+						input[i][j][0]++;
+					}
+					while(input[y][x][1] < 0 && x>=0 && y>=0 && x<columns && y<rows){
+						x+=dirs[dir][0];
+						y+=dirs[dir][1];
+					}
+					if(x<0 || x>=columns || y<0 || y>=rows) continue;
+					if((input[y][x][1] & (dir < 4 ? 0x20 : 0x40)) != 0) {
+						input[i][j][1]++;
+					}
 				}
-				else next[i][j]=layout[i][j];
+				
+				if(input[i][j][0] == 0){
+					change = 1;
+					input[i][j][0] ^= 0x20;
+					res1++;
+				}
+				else if((input[i][j][0]) >= 0x64){
+					change = 1;
+					input[i][j][0] ^= 0x20;
+					res1--;
+				}
+				
+				if(input[i][j][1] == 0){
+					change = 1;
+					input[i][j][1] ^= 0x20;
+					res2++;
+				}
+				else if(input[i][j][1] >= 0x65){
+					change = 1;
+					input[i][j][1] ^= 0x20;
+					res2--;
+				}
 			}
 		}
-		
-		int **tmp=layout;
-		layout=next;
-		for(int i=0;i<rows;i++){
-			free(tmp[i]);
-		}
-		free(tmp);
 		
 		if(!change) break;
 	}
 	
-	printf("Part 1: %d\n", occupied);
+	printf("Part 1: %d\nPart 2: %d\n", res1, res2);
 }
+
