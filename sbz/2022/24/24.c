@@ -28,31 +28,6 @@ static void moveAndEnter(struct blizzard *head, int **map, int width, int height
 	if(head->next) moveAndEnter(head->next, map, width, height);
 }
 
-static void printMap(int **map, int width, int height){
-	printf("#.");
-	for(int i=0;i<width;i++) fputc('#', stdout);
-	printf("\n");
-	for(int i=0;i<height;i++){
-		printf("#");
-		for(int j=0;j<width;j++){
-			switch(map[i][j]){
-				case(0):
-					fputc('.', stdout);
-					break;
-				case(1):
-					fputc('E', stdout);
-					break;
-				case(-1):
-					fputc('@', stdout);
-					break;
-			}
-		}
-		printf("#\n");
-	}
-	for(int i=0;i<width;i++) fputc('#', stdout);
-	printf(".#\n\n");
-}
-
 static int moveFrom(int xF, int yF, int xT, int yT, int turn, struct blizzard *head, int width, int height){
 	int **map = calloc(height, sizeof(*map));
 	for(int i=0;i<height;i++) map[i] = calloc(width, sizeof(**map));
