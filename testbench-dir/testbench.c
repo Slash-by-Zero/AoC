@@ -479,7 +479,7 @@ static void testProgram(struct programResults *res, char *path){
 	}
 	
 	if(printOutput){
-		fprintf(shell, "Output of %s/%s:\n", res->user, path);
+		fprintf(shell, "Output of %s/%s/%s:\n", res->user, path, res->fileName);
 		printFile(first_buf, shell);
 	}
 	res->complete = 1;
