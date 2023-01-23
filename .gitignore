@@ -1,5 +1,6 @@
 testbench
 *.conf
+jack/**
 
 # Prerequisites
 *.d
