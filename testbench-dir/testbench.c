@@ -43,6 +43,7 @@ struct pathResults{
 
 struct programResults{
 	char *user;
+	char *fileName;
 	int complete, exitcode;
 	long count, total, max, min;
 	struct programResults* next;
@@ -256,6 +257,10 @@ int main(int argc, char *argv[]){
 			
 			for(int k=0;k<globbuf2.gl_pathc;k++){
 				char *path_tmp = globbuf2.gl_pathv[k]+strlen(user_tmp)+1;
+				char *name_tmp = strdup(basename(path_tmp));
+				if(!name_tmp) die("strdup");
+				path_tmp = dirname(path_tmp);
+				
 				for(struct pathResults **walk=&first; ; walk = &((*walk)->next)){
 					if(!*walk){
 						*walk = malloc(sizeof(**walk));
@@ -266,6 +271,7 @@ int main(int argc, char *argv[]){
 						(*walk)->results = calloc(1,sizeof(*((*walk)->results)));
 						if(!(*walk)->results) die("calloc");
 						(*walk)->results->user = user_tmp;
+						(*walk)->results->fileName = name_tmp;
 						(*walk)->next=NULL;
 						break;
 					}
@@ -276,6 +282,7 @@ int main(int argc, char *argv[]){
 						if(!new) die("calloc");
 						
 						new->user = user_tmp;
+						new->fileName = name_tmp;
 						new->next = (*walk)->results;
 						(*walk)->results = new;
 						break;
@@ -284,11 +291,12 @@ int main(int argc, char *argv[]){
 						struct pathResults *new= malloc(sizeof(*new));
 						if(!new) die("malloc");
 						
-						new->path= strdup(path_tmp);
+						new->path = strdup(path_tmp);
 						if(!new->path) die("strdup");
 						new->results = calloc(1,sizeof(*((*walk)->results)));
 						if(!new->results) die("calloc");
 						new->results->user = user_tmp;
+						new->results->fileName = name_tmp;
 						new->next=*walk;
 						*walk=new;
 						break;
@@ -325,13 +333,12 @@ static void testPaths(struct pathResults *res){
 	{//Redirect stdin to input file of first target program 
 		char dirc[strlen(cwd)+strlen(res->results[0].user)+strlen(res->path)+3];
 		if(sprintf(dirc, "%s/%s/%s", cwd, res->results[0].user, res->path) < 0) die("sprintf");
-		dirname(dirc);
 		char input[strlen(dirc)+11];
 		if(sprintf(input, "%s/input.txt", dirc) < 0) die("sprintf");
 		
 		if(!freopen(input, "r", stdin)){
 			int terrno = errno;
-			fprintf(stderr, "%s/%s/%s: ", cwd, res->results[0].user, res->path);
+			fprintf(stderr, "%s/%s/%s/input.txt: ", cwd, res->results[0].user, res->path);
 			errno = terrno;
 			die("freopen");
 		}
@@ -348,20 +355,15 @@ static void testProgram(struct programResults *res, char *path){
 	char *execname;
 	{
 		//chdir to directory of target program and get execname
-		char dirc[strlen(cwd)+strlen(res->user)+strlen(path)+3];
-		sprintf(dirc, "%s/%s/%s", cwd, res->user, path);
-		char basec[strlen(dirc)+1];
-		strcpy(basec, dirc);
-		
-		dirname(dirc);
+		char dirc[strlen(cwd)+strlen(res->user)+strlen(path)+4];
+		sprintf(dirc, "%s/%s/%s/", cwd, res->user, path);
 		
 		if(chdir(dirc) < 0){
 			fprintf(stderr, "%s: ", dirc);
 			die("chdir");
 		}
 		
-		execname = strdup(basename(basec));
-		if(!execname) die("strdup");
+		execname = res->fileName;
 	}
 	
 	
@@ -396,7 +398,9 @@ static void testProgram(struct programResults *res, char *path){
 		
 		if(pid == 0){
 			execl(execname, execname, NULL);
-			fprintf(stderr, "%s/%s: ", res->user, path);
+			int terrno = errno;
+			fprintf(stderr, "%s/%s/%s: ", res->user, path, res->fileName);
+			errno = terrno;
 			die("execl");
 		}
 		
@@ -405,22 +409,24 @@ static void testProgram(struct programResults *res, char *path){
 		if(gettimeofday(&end, NULL) != 0) die("gettimeofday"); 
 		// End of timed section
 		
+		res->count++;
+		
 		if(!WIFEXITED(exit_code)){ //Check if program terminated normally
-			fprintf(stderr, "Program %s/%s did not finish execution! Further tests wont be necessary!\n", res->user, path);
+			fprintf(stderr, "Program %s/%s/%s did not finish execution! Further tests wont be necessary!\n\n", res->user, path, res->fileName);
 			
 			if(fclose(buf) != 0) die("fclose");
-			if(res->count != 0 && fclose(first_buf) != 0) die("fclose");
+			if(res->count != 1 && fclose(first_buf) != 0) die("fclose");
 			
-			goto cleanup_test;
+			return;
 		}
 		else if(WEXITSTATUS(exit_code) != 0){
-			fprintf(stderr, "Forked process returned an unexpected exit status on program %s/%s: %d\n", res->user, path, WEXITSTATUS(exit_code));
+			fprintf(stderr, "Forked process returned an unexpected exit status on program %s/%s/%s: %d\n\n", res->user, path, res->fileName, WEXITSTATUS(exit_code));
 			res->exitcode = WEXITSTATUS(exit_code);
 			
 			if(fclose(buf) != 0) die("fclose");
-			if(res->count != 0 && fclose(first_buf) != 0) die("fclose");
+			if(res->count != 1 && fclose(first_buf) != 0) die("fclose");
 			
-			goto cleanup_test;
+			return;
 		}
 		
 		
@@ -431,7 +437,6 @@ static void testProgram(struct programResults *res, char *path){
 		res->total += runtime;
 		if(runtime > res->max) res->max = runtime;
 		if(runtime < res->min) res->min = runtime;
-		res->count++;
 		
 		rewind(buf);
 		
@@ -447,7 +452,7 @@ static void testProgram(struct programResults *res, char *path){
 			}
 			if(ferror(first_buf)) die("fgetc");
 			if(c_buf != c_cmp){
-				fprintf(stderr, "Programm %s/%s produced a different output on run %ld, despite being given the same input!\n", res->user, path, res->count);
+				fprintf(stderr, "Programm %s/%s/%s produced a different output on run %ld, despite being given the same input!\n\n", res->user, path, res->fileName, res->count);
 				fprintf(stderr, "This output:\n");
 				printFile(buf, stderr);
 				
@@ -456,7 +461,7 @@ static void testProgram(struct programResults *res, char *path){
 				
 				if(fclose(buf) != 0) die("fclose");
 				
-				goto cleanup_test;
+				return;
 			}
 			
 			if(fclose(buf) != 0) die("fclose");
@@ -481,8 +486,6 @@ static void testProgram(struct programResults *res, char *path){
 	
 	if(fclose(first_buf) != 0) die("fclose");
 	
-cleanup_test:
-	free(execname);
 }
 
 static char *convTime(long time, int length){
@@ -513,21 +516,23 @@ static char *convTime(long time, int length){
 void printResults(struct pathResults *results, struct tabularStyle *style){
 	if(!results || !results->results) exit(2);
 	
-	int max_path=4, max_user=4, max_time=1;
+	int max_path=4, max_user=4, max_time=1, max_fileName=4;
 	
 	for(struct pathResults *walk=results; walk ; walk=walk->next){
 		if(strlen(walk->path) > max_path) max_path = strlen(walk->path);
 		for(struct programResults *walk2=walk->results; walk2; walk2=walk2->next){
 			if(strlen(walk2->user) > max_user) max_user = strlen(walk2->user);
+			if(strlen(walk2->fileName) > max_fileName) max_fileName = strlen(walk2->fileName);
 			if((int) log10(walk2->total) > max_time) max_time = (int) log10(walk2->total);
 		}
 	}
 	
 	max_time+=4;
-	int hline_length=max_path+max_user+((int) log10(runs))+4*max_time+31;
+	int hline_length=max_path+max_user+max_fileName+((int) log10(runs))+4*max_time+34;
 	
 	fprintf(shell, "%-*s %s ", max_path, "PATH", style->vdash);
 	fprintf(shell, "%-*s %s ", max_user, "USER", style->vdash);
+	fprintf(shell, "%-*s %s ", max_fileName, "FILE", style->vdash);
 	fprintf(shell, "%-*s %s ", (int) log10(runs) + 1, "RUNS", style->vdash);
 	fprintf(shell, "%-9s %s ", "COMPLETED", style->vdash);
 	fprintf(shell, "%-*s %s ", max_time, "TOTAL", style->vdash);
@@ -535,18 +540,19 @@ void printResults(struct pathResults *results, struct tabularStyle *style){
 	fprintf(shell, "%-*s %s ", max_time, "MAX", style->vdash);
 	fprintf(shell, "%-*s\n", max_time, "MIN");
 	
-	int ref[7];
+	int ref[8];
 	ref[0] = max_path + 1;
 	ref[1] = ref[0] + max_user + 3;
-	ref[2] = ref[1] + log10(runs) + 4;
-	ref[3] = ref[2] + 12;
-	for(int i=4;i<7;i++){
+	ref[2] = ref[1] + max_fileName + 3;
+	ref[3] = ref[2] + log10(runs) + 4;
+	ref[4] = ref[3] + 12;
+	for(int i=5;i<8;i++){
 		ref[i] = ref[i-1] + max_time + 3;
 	}
 	
 	if(style->hline) {
 		for(int i=0;i<hline_length;i++) {
-			for(int j = 0;j<7;j++){
+			for(int j = 0;j<8;j++){
 				if(ref[j] == i){
 					fprintf(shell, "%s", style->hvdash2);
 					i++;
@@ -560,7 +566,7 @@ void printResults(struct pathResults *results, struct tabularStyle *style){
 	for(struct pathResults *walk=results; walk ;){
 		if(walk != results && style->hline){
 			for(int i=0;i<hline_length;i++){
-				for(int j=0;j<7;j++){
+				for(int j=0;j<8;j++){
 					if(ref[j] == i){
 						fprintf(shell, "%s", style->hvdash1);
 						i++;
@@ -573,13 +579,15 @@ void printResults(struct pathResults *results, struct tabularStyle *style){
 		for(struct programResults *walk2=walk->results; walk2;){
 			fprintf(shell, "%*s %s ", max_path, (walk2 == walk->results || style->all) ? walk->path : "", style->vdash);
 			fprintf(shell, "%*s %s ", max_user, walk2->user, style->vdash);
+			fprintf(shell, "%*s %s ", max_fileName, walk2->fileName, style->vdash);
 			fprintf(shell, "%*ld %s ", (int) log10(runs) + 1, walk2->count, style->vdash);
 			fprintf(shell, "%9s %s ", walk2->complete ? "yes" : "no", style->vdash);
 			fprintf(shell, "%s %s ", convTime(walk2->total, max_time), style->vdash);
 			fprintf(shell, "%s %s ", convTime(walk2->total/walk2->count, max_time), style->vdash);
 			fprintf(shell, "%s %s ", convTime(walk2->max, max_time), style->vdash);
-			fprintf(shell, "%s\n", convTime(walk2->min, max_time));
+			fprintf(shell, "%s\n", convTime(walk2->min == LONG_MAX ? 0 : walk2->min, max_time));
 			struct programResults *tmp=walk2->next;
+			free(walk2->fileName);
 			free(walk2);
 			walk2=tmp;
 		}
