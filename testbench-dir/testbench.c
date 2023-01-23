@@ -136,7 +136,7 @@ int main(int argc, char *argv[]){
 			
 			path=calloc(14 + (size_t) log10((double) year), 1);
 			if(!path) die("calloc");
-			if(day != 0) sprintf(path, "%ld/%02ld/%02ld.out", year, day, day);
+			if(day != 0) sprintf(path, "%ld/%02ld/*.out", year, day);
 			else sprintf(path, "%ld/*/*.out", year);
 		}
 	}
@@ -322,7 +322,7 @@ static void testPaths(struct pathResults *res){
 		return;
 	}
 	
-	{//Redirect stind to input file of first target program 
+	{//Redirect stdin to input file of first target program 
 		char dirc[strlen(cwd)+strlen(res->results[0].user)+strlen(res->path)+3];
 		if(sprintf(dirc, "%s/%s/%s", cwd, res->results[0].user, res->path) < 0) die("sprintf");
 		dirname(dirc);
@@ -330,7 +330,9 @@ static void testPaths(struct pathResults *res){
 		if(sprintf(input, "%s/input.txt", dirc) < 0) die("sprintf");
 		
 		if(!freopen(input, "r", stdin)){
+			int terrno = errno;
 			fprintf(stderr, "%s/%s/%s: ", cwd, res->results[0].user, res->path);
+			errno = terrno;
 			die("freopen");
 		}
 	}
