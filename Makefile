@@ -5,7 +5,7 @@ CC = gcc
 csources = $(wildcard */*/*/*.c)
 asmsources = $(wildcard */*/*/*.S)
 jssources = $(wildcard */*/*/*.js)
-outs = $(csources:%.c=%.out) \ $(asmsources:%.S=%.out) \ $(jssources:%.js=%.out)
+outs = $(csources:%.c=%.out) $(asmsources:%.S=%.out) $(jssources:%.js=%.out)
 
 .PHONY: o clean
 
