@@ -20,11 +20,6 @@ clean:
 %.out: %.S
 	$(CC) $(CFLAGS) $(SFLAGS) -o $@ $<
 
-define bash
-#!/bin/bash
-node 
-endef
-
 %.out:%.js
 	echo "#!/bin/bash\nnode $(notdir $<)" > $@
 	chmod u+x $@
