@@ -15,19 +15,6 @@ struct tile{
 	struct tile *neighbours[4];
 };
 
-void printBits(size_t const size, void const * const ptr){
-	unsigned char *b = (unsigned char*) ptr;
-	unsigned char byte;
-	int i, j;
-	
-	for (i = size-1; i >= 0; i--) {
-		for (j = 7; j >= 0; j--) {
-			byte = (b[i] >> j) & 1;
-			printf("%u", byte);
-		}
-	}
-}
-
 static void reorient(struct tile *this, int rot, int flip){
 	{
 		struct tile *tmp[rot];
@@ -62,6 +49,7 @@ int main(){
 		new[count]->n = strtol(line+5, NULL, 10);
 		
 		if(!fgets(line, MAX_LINE_LENGTH, stdin) || strlen(line) <= 1) break;
+		
 		int edges[4][2] = {0};
 		for(int i=0;i<strlen(line)-1;i++){
 			edges[0][0] <<=1;
@@ -154,8 +142,8 @@ int main(){
 	static int loopArgs[2][2] = {{0,1},{7,-1}};
 	for(struct tile *walk1 = corner;;l+=8){
 		int k=0;
+		
 		for(struct tile *walk2 = walk1;;k++){
-			printf("%d ", walk2->n);
 			for(int y = 0; y<8; y++){
 				for(int x=0;x<8;x++){
 					int tx, ty;
@@ -167,6 +155,7 @@ int main(){
 						tx = loopArgs[(rot>>1)^1][0] + y * loopArgs[(rot >> 1)^1][1];
 						ty = loopArgs[(rot>>1)][0] + x * loopArgs[(rot >> 1)][1];
 					}
+					
 					img[l + (flip ? (7-y) : y)][k] = (img[l + (flip ? (7-y) : y)][k] << 1) + (walk2->img[ty][tx] == '#');
 				}
 			}
@@ -194,8 +183,6 @@ int main(){
 			
 			walk2 = next;
 		}
-		
-		printf("\n");
 		
 		struct tile *next = walk1->neighbours[2];
 		if(!next){
@@ -250,16 +237,6 @@ int main(){
 	uint8_t img_cpy[width << 3][width];
 	memcpy(img_cpy, img, sizeof(img));
 	
-	printf("\n");
-	for(int i=0;i<width<<3;i++){
-		for(int j=0;j<width;j++){
-			printBits(1, &img[i][j]);
-		}
-		printf("\n");
-	}
-	
-	printf("\n");
-	
 	for(int i=0;i < 3;i++){
 		horr_monster[i] <<= 4;
 	}
@@ -268,12 +245,13 @@ int main(){
 		uint32_t curr[3];
 		for(int k=0;k<3;k++){
 			curr[k] = (((uint32_t) img[i+k][0]) << 16) | (((uint32_t) img[i+k][1]) << 8) | (((uint32_t) img[i+k][2]) << 0);
-			horr_monster[k] <<= 4;
+			horr_monster[k] <<= 5;
 		}
 		for(int j=3;;){
 			int match = 1;
 			for(int k=0;k<3;k++) match &= (horr_monster[k] & curr[k]) == horr_monster[k];
-			if(match) for(int k=0;k<3;k++) for(int l=0;l<3;l++) img_cpy[i+k][j-1-l] &= ~((horr_monster[k] >> (8 * l)) & 0xff) ;
+			if(match) for(int k=0;k<3;k++) for(int l=0;l<4;l++) if(j-1-l >= 0) img_cpy[i+k][j-1-l] &= ~((horr_monster[k] >> (8 * l)) & 0xff) ;
+			
 			if((horr_monster[1] & 1) == 1){
 				if(j >= width) break;
 				for(int k=0;k<3;k++){
@@ -286,14 +264,14 @@ int main(){
 		}
 	}
 	
-	long res2=0;
-	for(int i=0;i<width<<3;i++){
+	int res2 = 0;
+	for(int i=0;i< width << 3; i++){
 		for(int j=0;j<width;j++){
-			for(int k=1<<7; k>0; k>>=1) if((img_cpy[i][j] & k) != 0) res2++;
+			for(int m = 1 << 7; m > 0; m >>= 1) if((img_cpy[i][j] & m) != 0) res2++;
 		}
 	}
 	
-	printf("Part 1: %ld\nPart 2: %ld\n", res1, res2);
+	printf("Part 1: %ld\nPart 2: %d\n", res1, res2);
 	
 	exit(0);
 }
