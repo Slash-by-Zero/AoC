@@ -117,6 +117,7 @@ int main(){
 	uint8_t img[width << 3][width];
 	memset(img, 0, 8*width*width);
 	
+	// Finding a corner tile of the image
 	struct tile *corner= NULL;
 	int rot=0;
 	for(int i=0;i<count;i++){
@@ -138,6 +139,7 @@ int main(){
 	int flip = 0;
 	reorient(corner, rot, flip);
 	
+	//Fitting the image together
 	int l=0;
 	static int loopArgs[2][2] = {{0,1},{7,-1}};
 	for(struct tile *walk1 = corner;;l+=8){
@@ -205,13 +207,13 @@ int main(){
 	}
 	res1 *= corner->n;
 	
-	static int horr_monster[3] = {
+	static const int horr_monster[3] = {
 		0x00002, 
 		0x86187, 
 		0x49248
 	};
 	
-	static int ver_monster[20] = {
+	static const int ver_monster[20] = {
 		0x2,
 		0x6,
 		0x2,
@@ -237,30 +239,73 @@ int main(){
 	uint8_t img_cpy[width << 3][width];
 	memcpy(img_cpy, img, sizeof(img));
 	
-	for(int i=0;i < 3;i++){
-		horr_monster[i] <<= 4;
-	}
-	
-	for(int i=0;i < (width << 3); i++){
-		uint32_t curr[3];
-		for(int k=0;k<3;k++){
-			curr[k] = (((uint32_t) img[i+k][0]) << 16) | (((uint32_t) img[i+k][1]) << 8) | (((uint32_t) img[i+k][2]) << 0);
-			horr_monster[k] <<= 5;
-		}
-		for(int j=3;;){
-			int match = 1;
-			for(int k=0;k<3;k++) match &= (horr_monster[k] & curr[k]) == horr_monster[k];
-			if(match) for(int k=0;k<3;k++) for(int l=0;l<4;l++) if(j-1-l >= 0) img_cpy[i+k][j-1-l] &= ~((horr_monster[k] >> (8 * l)) & 0xff) ;
+	for(int f = 0; f < 4; f++){
+		{
+			int horr_monster_cpy[3] = {0};
 			
-			if((horr_monster[1] & 1) == 1){
-				if(j >= width) break;
-				for(int k=0;k<3;k++){
-					horr_monster[k] <<= 8;
-					curr[k] = curr[k] << 8 | img[i+k][j];
-				}
-				j++;
+			for(int i=0;i < 3;i++){
+				if(f > 2) for(int m = 1; m < 1 << 20; m <<= 1) horr_monster_cpy[i] = (horr_monster_cpy[i] << 1) + ((horr_monster[(f&1) ? (2-i) : i] & m) != 0);
+				else horr_monster_cpy[(f&1) ? (2-i) : i] = horr_monster[i];
+				
+				horr_monster_cpy[i] <<= 4;
 			}
-			for(int k=0;k<3;k++) horr_monster[k] >>= 1;
+			
+			for(int i=0;i < (width << 3) - 2; i++){
+				uint32_t curr[3];
+				for(int k=0;k<3;k++){
+					curr[k] = (((uint32_t) img[i+k][0]) << 16) | (((uint32_t) img[i+k][1]) << 8) | (((uint32_t) img[i+k][2]) << 0);
+					horr_monster_cpy[k] <<= 4;
+				}
+				for(int j=3;;){
+					int match = 1;
+					for(int k=0;k<3;k++) match &= (horr_monster_cpy[k] & curr[k]) == horr_monster_cpy[k];
+					if(match) {
+						for(int k=0;k<3;k++) for(int l=0;l<4;l++) if(j-1-l >= 0) img_cpy[i+k][j-1-l] &= ~((horr_monster_cpy[k] >> (8 * l)) & 0xff) ;
+					}
+					if((horr_monster_cpy[1] & 1) == 1){
+						if(j >= width) break;
+						for(int k=0;k<3;k++){
+							horr_monster_cpy[k] <<= 8;
+							curr[k] = curr[k] << 8 | img[i+k][j];
+						}
+						j++;
+					}
+					for(int k=0;k<3;k++) horr_monster_cpy[k] >>= 1;
+				}
+			}
+		}
+		
+		{
+			int ver_monster_cpy[20] = {0};
+			for(int i=0;i < 20;i++){
+				if(f > 2) for(int m = 1; m < 1 << 3; m <<= 1) ver_monster_cpy[i] = (ver_monster_cpy[i] << 1) + (ver_monster[(f&1) ? (19-i) : i] & m) != 0;
+				else ver_monster_cpy[(f&1) ? (19-i) : i] = ver_monster[i];
+				
+				ver_monster_cpy[i] <<= 5;
+			}
+			
+			for(int i=0;i < (width << 3) - 2; i++){
+				uint32_t curr[20];
+				for(int k=0;k<20;k++){
+					curr[k] = ((uint32_t) img[i+k][0]);
+					ver_monster_cpy[k] <<= 5;
+				}
+				for(int j=1;;){
+					int match = 1;
+					for(int k=0;k<20;k++) match &= (ver_monster_cpy[k] & curr[k]) == ver_monster_cpy[k];
+					if(match) for(int k=0;k<20;k++) for(int l=0;l<2;l++) if(j-1-l >= 0) img_cpy[i+k][j-1-l] &= ~((ver_monster_cpy[k] >> (8 * l)) & 0xff) ;
+					
+					if((ver_monster_cpy[0] & 2) == 2){
+						if(j >= width) break;
+						for(int k=0;k<20;k++){
+							ver_monster_cpy[k] <<= 8;
+							curr[k] = curr[k] << 8 | img[i+k][j];
+						}
+						j++;
+					}
+					for(int k=0;k<20;k++) ver_monster_cpy[k] >>= 1;
+				}
+			}
 		}
 	}
 	
